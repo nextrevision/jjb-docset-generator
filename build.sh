@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -ex
 
 CWD=$(pwd)
 ONLINE_URL="http://docs.openstack.org/infra/jenkins-job-builder/"
@@ -15,7 +15,7 @@ which virtualenv || { echo "Must have virtualenv installed"; exit 1; }
 rm -Rf *.tar.gz *.docset
 
 # clone source
-git clone https://github.com/openstack-infra/jenkins-job-builder
+git clone https://git.openstack.org/openstack-infra/jenkins-job-builder
 
 # install dependencies
 cd jenkins-job-builder
@@ -24,13 +24,13 @@ source .venv/bin/activate
 pip install doc2dash
 pip install -r requirements.txt
 pip install -r test-requirements.txt
-python setup.py install
+python setup.py develop
 
 JJB_VERSION=$(jenkins-jobs --version 2>&1 | cut -d ':' -f2)
 
 # make docs
 cd doc/
-make html
+make -e SPHINXOPTS='' html
 doc2dash -n "${DOCSET_NAME}" -d ${CWD} build/html/
 
 # quick and dirty way of adding plugins to search index
