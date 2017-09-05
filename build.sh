@@ -21,7 +21,6 @@ git clone https://git.openstack.org/openstack-infra/jenkins-job-builder
 cd jenkins-job-builder
 virtualenv .venv
 source .venv/bin/activate
-pip install doc2dash
 pip install -r requirements.txt
 pip install -r test-requirements.txt
 python setup.py develop
@@ -31,6 +30,13 @@ JJB_VERSION=$(jenkins-jobs --version 2>&1 | cut -d ':' -f2)
 # make docs
 cd doc/
 make -e SPHINXOPTS='' html
+cd ../
+
+# convert docs to dash
+pip uninstall -y -r requirements.txt
+pip uninstall -y -r test-requirements.txt
+pip install doc2dash
+cd doc
 doc2dash -n "${DOCSET_NAME}" -d ${CWD} build/html/
 
 # quick and dirty way of adding plugins to search index
